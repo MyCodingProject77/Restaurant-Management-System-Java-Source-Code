@@ -1,0 +1,191 @@
+import java.sql.*;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane; 
+import javax.swing.table.DefaultTableModel;
+public class OrderJFrame extends javax.swing.JFrame {
+
+    
+    public OrderJFrame() {
+        initComponents();
+        Connect();
+        OrderData();
+        
+    }
+    
+    Connection con;
+    PreparedStatement pst;
+    
+    
+    public void Connect(){
+        
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            con = DriverManager.getConnection("jdbc:mysql://localhost/restaurantdb","root","");
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(OrderJFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(OrderJFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    
+    
+    }
+    
+    private void OrderData(){
+        
+        try {
+            int QQ;
+            pst = con.prepareStatement("SELECT * FROM ordertab");
+            ResultSet Rs = pst.executeQuery();
+            
+            ResultSetMetaData RSMD = Rs.getMetaData();
+
+            QQ = RSMD.getColumnCount();
+            
+            DefaultTableModel DFG =(DefaultTableModel)table1.getModel(); 
+            
+            DFG.setRowCount(0);
+             
+            while(Rs.next()){
+        
+            Vector v2 = new Vector();
+             
+            for(int aa=1; aa<=QQ; aa++){
+                 
+                v2.add(Rs.getString("oid"));
+                v2.add(Rs.getString("food1"));
+                v2.add(Rs.getString("q1"));
+                v2.add(Rs.getString("food2"));
+                v2.add(Rs.getString("q2"));
+                v2.add(Rs.getString("other"));
+                v2.add(Rs.getString("drink"));
+                v2.add(Rs.getString("q3"));
+                
+             }
+             
+             DFG.addRow(v2);
+        
+        }
+          
+        } catch (SQLException ex) {
+            Logger.getLogger(OrderJFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    
+    
+    
+    }
+
+
+
+
+
+    Insert Code
+
+
+    try {
+            String oid = txtOId.getText();
+            String food1 = txtOFood1.getText();
+            String q1 = txtQ1.getText();
+            String food2 = txtOFood2.getText();
+            String q2 = txtQ2.getText();
+            String other = txtOther.getText();
+            String drink = txtODrink.getText();
+            String q3 = txtQ3.getText();
+            
+            pst = con.prepareStatement("INSERT INTO ordertab (oid,food1,q1,food2,q2,other,drink,q3)VALUES(?,?,?,?,?,?,?,?)");
+            
+            pst.setString(1,oid);
+            pst.setString(2,food1);
+            pst.setString(3,q1);
+            pst.setString(4,food2);
+            pst.setString(5,q2);
+            pst.setString(6,other);
+            pst.setString(7,drink);
+            pst.setString(8,q3);
+            
+            pst.executeUpdate();
+            JOptionPane.showMessageDialog(this, "Record Inserted Successfully");
+            OrderData();
+             
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(OrderJFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }                                         
+
+
+
+
+
+    Update Code
+
+
+    try {
+            String oid = txtOId.getText();
+            String food1 = txtOFood1.getText();
+            String q1 = txtQ1.getText();
+            String food2 = txtOFood2.getText();
+            String q2 = txtQ2.getText();
+            String other = txtOther.getText();
+            String drink = txtODrink.getText();
+            String q3 = txtQ3.getText();
+            
+            pst = con.prepareStatement("update ordertab set food1= ?,q1= ?,food2= ?,q2= ?, other= ?, drink= ?, q3= ? where oid= ?");
+            
+            pst.setString(1,food1);
+            pst.setString(2,q1);
+            pst.setString(3,food2);
+            pst.setString(4,q2);
+            pst.setString(5,other);
+            pst.setString(6,drink);
+            pst.setString(7,q3);
+            pst.setString(8,oid);
+            pst.executeUpdate();
+            JOptionPane.showMessageDialog(this, "Record Updated Successfully");
+            OrderData();
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(OrderJFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+            
+    }               
+
+
+
+
+    Delete Code
+
+
+    try {
+            String oid = txtOId.getText();
+            pst=con.prepareStatement("DELETE FROM ordertab WHERE oid=?");
+            pst.setString(1,oid);
+            pst.executeUpdate();
+            JOptionPane.showMessageDialog(this, "Record Deleted Successfully");
+            OrderData();
+        } catch (SQLException ex) {
+            Logger.getLogger(OrderJFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }                          
+
+
+
+
+   btn Total Code
+
+   try {
+            String sql="select count(food1) from ordertab";
+            pst=con.prepareStatement(sql);
+            ResultSet Rs = pst.executeQuery();
+            if(Rs.next()){
+            String sum=Rs.getString("count(food1)");
+            txtSum.setText(sum);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(OrderJFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }                                        
